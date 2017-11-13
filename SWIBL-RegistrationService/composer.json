@@ -1,0 +1,11 @@
+{
+	"name" : "swibl-registrationservice/swibl-registrationservice",
+	"require" : {
+		"slim/slim" : "~3.9"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"swibl\\" : "src"
+		}
+	}
+}
