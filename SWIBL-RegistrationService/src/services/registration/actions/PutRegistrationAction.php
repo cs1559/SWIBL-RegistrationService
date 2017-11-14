@@ -4,10 +4,7 @@ namespace swibl\services\registration\actions;
 
 use Slim\Container;
 use Exception;
-use swibl\services\games\GameBuilder;
-use swibl\services\games\GameService;
-use swibl\services\games\GameServiceResponse;
-use swibl\services\games\GamesDAO;
+
 
 class PutRegistrationAction
 {
@@ -19,6 +16,7 @@ class PutRegistrationAction
     
     public function __invoke($request, $response, $args) {
         
+        /*
         $service = GameService::getInstance();
         
         $id = $request->getAttribute("id");
@@ -43,7 +41,7 @@ class PutRegistrationAction
         }
         
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        
+        */
     }
 }
 ?>

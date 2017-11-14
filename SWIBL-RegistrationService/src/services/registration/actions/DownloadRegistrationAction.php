@@ -5,13 +5,10 @@ use Slim\Container;
 use Exception;
 use swibl\core\Error;
 use swibl\core\exception\RecordNotFoundException;
-use swibl\services\games\GameHelper;
-use swibl\services\games\GameService;
-use swibl\services\games\GameServiceResponse;
-use swibl\services\games\GamesDAO;
 use swibl\services\registration\RegistrationHelper;
 use swibl\services\registration\RegistrationService;
 use swibl\services\registration\RegistrationDAO;
+use swibl\services\registration\RegistrationServiceResponse;
 
 
 /**
@@ -40,11 +37,9 @@ class DownloadRegistrationAction
              
        $dao = RegistrationDAO::getInstance($service->getDatabase());
        try {
-           $results = $dao->getRegistrations($season);
+           $registrations = $dao->getRegistrations($season);
 
-           $registrations = RegistrationHelper::bindArray($results);
-           
-         
+          // $registrations = RegistrationHelper::bindArray($results);
            // Header = game#, game date, game_time, hometeam
            $headerRow = "id, Age Group, Team, Coach, Address, City, State, Email, Phone, Cell Phone, Requested Division, Tournament, All-Star, Conf Number";
            $response->write($headerRow . "\r\n");
@@ -84,7 +79,7 @@ class DownloadRegistrationAction
        }
        catch (RecordNotFoundException $e) {
            $logger->info("TEAM SCHEDULE NOT FOUND - " . $request->getUri());
-           $svcresponse = new GameServiceResponse(400, $e->getMessage());
+           $svcresponse = RegistrationServiceResponse::getInstance(400, $e->getMessage());
            $response->write(json_encode($svcresponse));
            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
        }
@@ -93,7 +88,7 @@ class DownloadRegistrationAction
            $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
            $error->setMethod("GET /{id}");
            $error->setInternalMessage($e->getMessage());
-           $svcresponse = new GameServiceResponse(400, $e->getMessage());
+           $svcresponse = RegistrationServiceResponse::getInstance(400, $e->getMessage());
            $svcresponse->addError($error);
            $response->write(json_encode($svcresponse));
            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');

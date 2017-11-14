@@ -1,2 +1,4 @@
 /vendor/
 /config.ini
+/config-local.ini
+/config-production.ini

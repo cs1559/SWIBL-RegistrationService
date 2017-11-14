@@ -6,9 +6,13 @@
 
 
 
+use swibl\services\registration\actions\ConfirmRegistrationAction;
 use swibl\services\registration\actions\DownloadRegistrationAction;
 use swibl\services\registration\actions\GetRegistrationAction;
+use swibl\services\registration\actions\PostRegistrationAction;
 use swibl\services\registration\RegistrationRequestAuthorizer;
+use swibl\services\registration\actions\DeleteRegistrationAction;
+use swibl\services\registration\actions\PutRegistrationAction;
 
 require 'vendor/autoload.php';
 
@@ -28,15 +32,13 @@ $app = new \Slim\App($config);
 $app->add(new RegistrationRequestAuthorizer());
 
 // Service Routes
-// $app->get('/{id}', GetGameAction::class); 
-// $app->get('/schedule/{teamid}/season/{seasonid}', GetTeamScheduleAction::class);
-// $app->put('/{id}', PutGameAction::class);
-// $app->post('/', PostGameAction::class);
-// $app->delete('/{id}', DeleteGameAction::class);
-
 $app->get('/{id}', GetRegistrationAction::class);
 $app->get('/download/{seasonid}', DownloadRegistrationAction::class);
-                            
+$app->put('/{id}/confirm/{confnum}', ConfirmRegistrationAction::class);
+$app->post('/', PostRegistrationAction::class);
+$app->post('/', DeleteRegistrationAction::class);
+$app->put('/{id}', PutRegistrationAction::class);
+            
 $app->run();
                     
                     

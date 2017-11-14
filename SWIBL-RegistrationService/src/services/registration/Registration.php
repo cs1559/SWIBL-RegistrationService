@@ -31,7 +31,7 @@ class Registration extends BaseObject {
     var $registrationdate = null;
     var $registeredby = null;
     var $confirmationnumber = null;
-    var $divisionclass = null;
+    var $divclass = null;
     var $cost = null;
     var $ipaddr = null;
     var $tosack = null;
@@ -194,10 +194,10 @@ class Registration extends BaseObject {
         return $this->allstarevent;
     }
     function getDivisionClass() {
-        return $this->divisionclass;
+        return $this->divclass;
     }
     function setDivisionClass($divclass) {
-        $this->divisionclass = $divclass;
+        $this->divclass = $divclass;
     }
     function getCost() {
         return $this->cost;

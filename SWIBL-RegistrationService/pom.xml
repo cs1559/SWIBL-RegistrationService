@@ -17,9 +17,9 @@
   </distributionManagement>
   
     <build>
-	    <sourceDirectory>C:\dev\Git-Repository\swibl\SWIBL-RegistrationService\</sourceDirectory>
-	    <scriptSourceDirectory>C:\Users\Admin\git\swibl\SWIBL-RegistrationService\src\main\scripts</scriptSourceDirectory>
-	    <testSourceDirectory>C:\Users\Admin\git\swibl\SWIBL-RegistrationService\src\test\java</testSourceDirectory>
+	    <sourceDirectory>C:\dev\Git-Repository\SWIBL-RegistrationService\SWIBL-RegistrationService\</sourceDirectory>
+	    <scriptSourceDirectory>C:\Users\Admin\git\SWIBL-RegistrationService\SWIBL-RegistrationService\src\main\scripts</scriptSourceDirectory>
+	    <testSourceDirectory>C:\Users\Admin\git\SWIBL-RegistrationService\SWIBL-RegistrationService\src\test\java</testSourceDirectory>
 	    <outputDirectory>C:\xampp\htdocs\swibl\api\registration\v1</outputDirectory>
 	    <testOutputDirectory>C:\xampp\htdocs\swibl\api\registration\v1</testOutputDirectory>
          	
@@ -39,7 +39,6 @@
 				<configuration>
 					<target>
 						<echo>Build/Install Local phase</echo>
-						<copy file="${project.build.sourceDirectory}/readme.txt" todir="${project.build.testOutputDirectory}/readme.txt"/>
 						<copy todir="${project.build.testOutputDirectory}">
 						    <fileset dir="${project.build.sourceDirectory}"/>
 						</copy>

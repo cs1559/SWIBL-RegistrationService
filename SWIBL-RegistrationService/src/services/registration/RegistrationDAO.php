@@ -37,10 +37,12 @@ class RegistrationDAO {
         $db->setQuery("select * from joom_jleague_divmap where id = " . $id);
         try {
             $result = $db->loadObject();
+            $builder = new RegistrationBuilder();
+            $object = $builder->build($result);
         } catch (\Exception $e) {
             throw $e;
         }
-        return $result;
+        return $object;
     }
     
     
@@ -58,7 +60,9 @@ class RegistrationDAO {
         $db = $this->getDatabase();
         $db->setQuery("select * from joom_jleague_divmap where season = " . $season . " order by agegroup" );
         try {
-            $registrations = $db->loadObjectList();
+            $results = $db->loadObjectList();
+            $registrations = RegistrationHelper::bindArray($results);
+            
         } catch (\Exception $e) {
             throw $e;
         }
@@ -101,14 +105,15 @@ class RegistrationDAO {
         
         $db = $this->getDatabase();
         $newDate = DateUtil::dateConvertForInput($obj->getRegistrationDate());
+        
         $logger->debug("after date conversion " . $obj->getId());
         
         $query = 'INSERT INTO joom_jleague_divmap (id, division_id, season, team_id, name, address, city, state, email, phone, cellphone, '
             . 'teamname, agegroup, existingteam, published, paid, confnum, confirmed, tournament, allstarevent, regdate, registeredby, '
-                . 'divclass, tosack, ipadr)'
+                . 'divclass, tosack, ipaddr)'
                     . ' VALUES (0,'
                 . '"' . $obj->getDivisionId(). '",'
-                . '"' . $obj->getSeason() . '",'
+                . '"' . $obj->getSeasonId() . '",'
                 . '"' . $obj->getTeamId() . '",'
                 . '"' . $obj->getName() . '",'
                 . '"' . $obj->getAddress() . '",'
@@ -122,7 +127,7 @@ class RegistrationDAO {
                 . '"' . $obj->getExistingTeam() . '",'
                 . '"' . $obj->getPublished() . '",'
                 . '"' . $obj->isPaid() . '",'
-                . '"' . $obj->getConfirmationNumber() . '",'
+                . '"' . $obj->getConfirmationNumber(). '",'
                 . '"' . $obj->isConfirmed() . '",'
                 . '"' . $obj->isPlayingInTournament() . '",'
                 . '"' . $obj->isPlayingInAllStarEvent() . '", '      
@@ -132,11 +137,9 @@ class RegistrationDAO {
                 . '"' . $obj->getTosAck() . '",'
                 . '"' . $obj->getIpAddress() . '"'
             .  ')';
-                                                                                                    
-                                                                                                
+                                                                                                                                                                                                    
         $logger->debug($query);
-                                                                                                    
-                                                                                                    
+                                                                                                                                                                                                
         if (!$db->query($query)) {
             $logger->error($db->getErrorMsg());
             throw new Exception($db->getErrorMsg());
@@ -147,4 +150,26 @@ class RegistrationDAO {
                                                                                                     
     }
 
+    function confirm($id) {
+        
+        $service = RegistrationService::getInstance();
+        $logger = $service->getLogger();
+        
+        $logger->debug("Attempting to UPDATE (CONFIRM) record " . $id);
+        
+        $db = $this->getDatabase();
+        $db->setQuery("update joom_jleague_divmap set confirmed = 1 where id = " . $id);
+        try {
+            $result = $db->query();
+            $logger->info("Total records updated is " . $db->getAffectedRows());
+            if ($db->getAffectedRows() == 0) {
+                throw new Exception("NO RECORDS CONFIRMED");
+            }
+        } catch (\Exception $e) {
+            $logger->error($db->getErrorMsg());
+            throw $e;
+        }
+        return true;
+    }
+    
 }

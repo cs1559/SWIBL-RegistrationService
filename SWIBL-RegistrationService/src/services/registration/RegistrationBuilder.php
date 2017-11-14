@@ -25,6 +25,7 @@ class RegistrationBuilder extends ObjectBuilder {
         "id" => "setId",
         "division_id" => "setDivisionId",
         "season" => "setSeasonId",
+        "seasonid" => "setSeasonId",
         "team_id" => "setTeamId",
         "name" => "setName",
         "address" => "setAddress",
@@ -44,6 +45,7 @@ class RegistrationBuilder extends ObjectBuilder {
         "allstarevent" => "setPlayingInAllStarEvent",  
         "tournament" => "setPlayingInTournament",  
         "regdate" => "setRegistrationDate",  // need to change the object variable
+        "registrationdate" => "setRegistrationDate",
         "registeredby" => "setRegisteredBy",
         "divclass" => "setDivisionClass",
         "requestedclass" => "setRequestedClassification",

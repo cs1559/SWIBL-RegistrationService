@@ -5,13 +5,8 @@ use Slim\Container;
 use Exception;
 use swibl\core\Error;
 use swibl\core\exception\RecordNotFoundException;
-use swibl\services\games\GameBuilder;
-use swibl\services\games\GameService;
-use swibl\services\games\GameServiceResponse;
-use swibl\services\games\GamesDAO;
 use swibl\services\registration\RegistrationService;
 use swibl\services\registration\RegistrationDAO;
-use swibl\services\registration\RegistrationBuilder;
 use swibl\services\registration\RegistrationServiceResponse;
 
 class GetRegistrationAction
@@ -30,11 +25,11 @@ class GetRegistrationAction
         $dao = RegistrationDAO::getInstance($service->getDatabase());
        
         try {
-            $result = $dao->get($request->getAttribute('id'));
-            $logger->debug("Building Registration " . $request->getAttribute('id') . " Object");
-            $builder = new RegistrationBuilder();
-            $object = $builder->build($result);
-            $logger->debug("Registration object " . $request->getAttribute('id') . " built");
+            $object = $dao->get($request->getAttribute('id'));
+//             $logger->debug("Building Registration " . $request->getAttribute('id') . " Object");
+//             $builder = new RegistrationBuilder();
+//             $object = $builder->build($result);
+//             $logger->debug("Registration object " . $request->getAttribute('id') . " built");
             
             $svcresponse = RegistrationServiceResponse::getInstance(200,"Record retrieved");
             $svcresponse->setData($object);

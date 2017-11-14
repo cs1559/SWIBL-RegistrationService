@@ -1,15 +1,14 @@
 <?php
 namespace swibl\services\registration\actions;
 
-
 use Slim\Container;
 use Exception;
 use swibl\services\registration\RegistrationService;
 use swibl\services\registration\RegistrationDAO;
-use swibl\services\registration\RegistrationBuilder;
 use swibl\services\registration\RegistrationServiceResponse;
 
-class PostRegistrationAction
+
+class ConfirmRegistrationAction
 {
     protected $container;
     
@@ -20,37 +19,41 @@ class PostRegistrationAction
     public function __invoke($request, $response, $args) {
         
         $service = RegistrationService::getInstance();
+        
+        $id = $request->getAttribute("id");
+        $confnum = $request->getAttribute("confnum");
+        
         $body = $request->getBody();
         $content = $body->getContents();
         
         $logger = $service->getLogger();
-        $logger->info("POST /" . $content );
-        
-        //         $content2 = $request->getParsedBody();
+        $logger->info("CONFIRM /" . $request->getAttribute('id') . " CONF NUM=" . $confnum);
         
         $dao = RegistrationDAO::getInstance($service->getDatabase());
         try {
-            $builder = new RegistrationBuilder();
-            $logger->debug("REQUEST CONTENT: " . $content);
-            $registration = $builder->build(json_decode($content));
+            $reg = $dao->get($id);
             
-            $registration->setConfirmationNumber(uniqid());
-            
-            $newid = $dao->insert($registration);
-            $registration->setId($newid);
-            $svcresponse = new RegistrationServiceResponse(200, "Record " . $newid . " has been created",$registration);
+            if ($confnum != $reg->getConfirmationNumber()) {
+                $logger->error("INVALID CONFIRMATION NUMBRER");
+                $svcresponse = RegistrationServiceResponse::getInstance(400, "INVALID CONFIRMATION NUMBRER");
+                $response->write(json_encode($svcresponse));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            }
+
+            $dao->confirm($id);
+            $svcresponse = RegistrationServiceResponse::getInstance(200, "Record " . $id . " has been successfully confirmed by user");
             $response->write(json_encode($svcresponse));
         }
         catch (Exception $e) {
-            $logger->error("POST /" . $e->getTraceAsString() );
-            $svcresponse = new RegistrationServiceResponse(400, $e->getMessage());
+            $logger->info("CONFIRM /" . $e->getTraceAsString() );
+            $svcresponse = RegistrationServiceResponse::getInstance(400, $e->getMessage());
             $response->write(json_encode($svcresponse));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+
         }
         
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        
-        
+
     }
 }
 ?>
