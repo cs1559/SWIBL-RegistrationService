@@ -31,6 +31,8 @@ abstract class RequestAuthorizer {
     {
         
         $service = $this->getService();
+        $logger = $service->getLogger();
+        $logger->info("authentiating " . $_SERVER['REQUEST_METHOD'] . " request");
         
         // Support a global permission for all GET requests.
         if ($_SERVER['REQUEST_METHOD'] == "GET") {
@@ -54,9 +56,10 @@ abstract class RequestAuthorizer {
      */
     function authenticateRequest(\Psr\Http\Message\ServerRequestInterface $request) {
         $service = $this->getService();
-        $db = $service->getDatabase();
         $logger = $service->getLogger();
+        $logger->debug("Inside authenticateRequest method");
         
+        $db = $service->getDatabase();
         $clientid = $request->getHeaderLine("PHP_AUTH_USER");
         
         $dao = AuthDAO::getInstance($db);

@@ -4,6 +4,10 @@ namespace swibl\services\registration\actions;
 
 use Slim\Container;
 use Exception;
+use swibl\services\registration\RegistrationService;
+use swibl\services\registration\RegistrationDAO;
+use swibl\services\registration\RegistrationBuilder;
+use swibl\services\registration\RegistrationServiceResponse;
 
 
 class PutRegistrationAction
@@ -15,24 +19,23 @@ class PutRegistrationAction
     }
     
     public function __invoke($request, $response, $args) {
-        
-        /*
-        $service = GameService::getInstance();
-        
-        $id = $request->getAttribute("id");
+        $service = RegistrationService::getInstance();
         $body = $request->getBody();
         $content = $body->getContents();
         
         $logger = $service->getLogger();
         $logger->info("PUT /" . $content );
         
-        $dao = GamesDAO::getInstance($service->getDatabase());
+   
+        $id = $request->getAttribute("id");
+        
+        $dao = RegistrationDAO::getInstance($service->getDatabase());
         try {
-            $builder = new GameBuilder();
+            $builder = new RegistrationBuilder();
             $logger->debug( $content);
-            $game = $builder->build(json_decode($content));
-            $dao->update($game);
-            $svcresponse = new GameServiceResponse(200, "Record " . $game->getId() . " has been updated",$game);
+            $reg = $builder->build(json_decode($content));
+            $dao->update($reg);
+            $svcresponse = new RegistrationServiceResponse(200, "Record " . $reg->getId() . " has been updated",$reg);
             $response->write(json_encode($svcresponse));
         }
         catch (Exception $e) {
@@ -41,7 +44,7 @@ class PutRegistrationAction
         }
         
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        */
+
     }
 }
 ?>

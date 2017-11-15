@@ -36,7 +36,7 @@ $app->get('/{id}', GetRegistrationAction::class);
 $app->get('/download/{seasonid}', DownloadRegistrationAction::class);
 $app->put('/{id}/confirm/{confnum}', ConfirmRegistrationAction::class);
 $app->post('/', PostRegistrationAction::class);
-$app->post('/', DeleteRegistrationAction::class);
+$app->delete('/', DeleteRegistrationAction::class);
 $app->put('/{id}', PutRegistrationAction::class);
             
 $app->run();

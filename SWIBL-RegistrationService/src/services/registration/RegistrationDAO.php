@@ -150,6 +150,52 @@ class RegistrationDAO {
                                                                                                     
     }
 
+    function update(Registration $obj) {
+        $service = RegistrationService::getInstance();
+        $logger = $service->getLogger();
+        
+        $logger->debug("Attempting to UPDATE record " . $obj->getId());
+        
+        $db = $this->getDatabase();
+        $newDate = DateUtil::dateConvertForInput($obj->getRegistrationDate());
+        
+        $query = 'update  joom_jleague_divmap set '
+            . ' division_id = "' . $obj->getDivisionId(). '", '
+            . ' season = "' . $obj->getSeasonId(). '", '
+            . ' team_id = "' . $obj->getTeamId(). '", '
+            . ' teamname = "' . $obj->getTeamName(). '", '
+            . ' name = "' . $obj->getName(). '", '
+            . ' city = "' . $obj->getCity(). '", '
+            . ' state = "' . $obj->getState(). '", '
+            . ' email = "' . $obj->getEmail(). '", '
+            . ' phone = "' . $obj->getPhone(). '", '
+            . ' cellphone = "' . $obj->getCellPhone(). '", '
+            . ' agegroup = "' . $obj->getAgeGroup(). '", '
+            . ' existingteam = "' . $obj->getExistingTeam(). '", '
+            . ' paid = "' . $obj->isPaid() . '", '
+            . ' confirmed = "' . $obj->isConfirmed(). '", '
+            . ' tournament = "' . $obj->isPlayingInTournament() . '", '
+            . ' allstarevent = "' . $obj->isPlayingInAllStarEvent() . '", '
+        //			. ' confnum = "' . $obj->getConfirmationNumber() . '", '
+            . ' divclass = "' . $obj->getDivisionClass() . '", '
+            . ' requestedclass = "' . $obj->getRequestedClassification() . '",'
+            . ' tosack = "' . $obj->getTosAck() . '", '
+            . ' ipaddr = "' . $obj->getIpAddress() . '", '
+            . ' published = ' . $obj->getPublished()
+            . ' where id = ' . $obj->getId();
+        
+            $logger->debug($query);
+            
+            if (!$db->query($query)) {
+                $logger->error($db->getErrorMsg());
+                throw new Exception($db->getErrorMsg());
+            } else {
+                $logger->info("Record ID " . $obj->getId() . " has been updated");
+                return true;
+            }	  
+    }
+    
+    
     function confirm($id) {
         
         $service = RegistrationService::getInstance();

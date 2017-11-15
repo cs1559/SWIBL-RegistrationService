@@ -38,6 +38,9 @@ class PostRegistrationAction
             
             $newid = $dao->insert($registration);
             $registration->setId($newid);
+
+            // SEND EMAIL CONFIRMATION
+            
             $svcresponse = new RegistrationServiceResponse(200, "Record " . $newid . " has been created",$registration);
             $response->write(json_encode($svcresponse));
         }
