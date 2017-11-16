@@ -64,7 +64,7 @@ class DownloadRegistrationAction
                    str_replace(","," ",$reg->getAddress()),
                    str_replace(","," ",$reg->getCity()),
                    $reg->getState(),
-                   $reg->getEmail(),
+                   str_replace(","," ",$reg->getEmail()),
                    $reg->getPhone(),
                    $reg->getCellPhone(),
                    $reg->getDivisionClass(),
