@@ -17,5 +17,6 @@ abstract class Application {
     abstract public function getConfig();
     abstract public function getDatabase();
     abstract public function getLogger();
+    abstract public function getMailer();
     
 }
