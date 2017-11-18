@@ -4,7 +4,14 @@ namespace swibl\core;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use swibl\core\authentication\AuthDAO;
+use swibl\core\exception\ApiSecurityException;
 
+/**
+ * This class is a SLIM middleware component for the service to authenticate the incoming request.  If the request cannot be
+ * authenticated, then return a 401 message.
+ * @author Admin
+ *
+ */
 abstract class RequestAuthorizer {
     
     var $service = null;
@@ -33,6 +40,7 @@ abstract class RequestAuthorizer {
         $service = $this->getService();
         $logger = $service->getLogger();
         $logger->info("authentiating " . $_SERVER['REQUEST_METHOD'] . " request");
+        $logger->info("Current request URI: " . $_SERVER['REQUEST_URI']);
         
         // Support a global permission for all GET requests.
         if ($_SERVER['REQUEST_METHOD'] == "GET") {
@@ -41,9 +49,15 @@ abstract class RequestAuthorizer {
         
         if ($service->isAuthenticationEnabled()) {
             // Authenticate the request.
-            $authenticated = $this->authenticateRequest($request);
-            if (!$authenticated) {
-                return $response->withStatus(401,"Unauthorized request");
+            try {
+                
+                $authenticated = $this->authenticateRequest($request);
+                if (!$authenticated) {
+                    return $response->withStatus(401,"Unauthorized request");
+                }
+            } catch (ApiSecurityException $e) {
+                $logger->info("AUTENTCATION EXCEPTION CAUGHT " . $e->getMessage());
+                return $response->withStatus(401,$e->getMessage());
             }
         }
         return $next($request, $response);
@@ -68,17 +82,17 @@ abstract class RequestAuthorizer {
         
         try {
             $token = $dao->getAUthToken($clientid);
+            $logger->info("KEY  " . $token->getConsumerKey());
             $secret = $token->getConsumersecret();
         } catch (\Exception $e) {
             $logger->info("Client " . $clientid . " did not have an authtoken granted");
             $secret="";
+            throw new ApiSecurityException("API SECURITY ERROR: NO AUTHTOKEN FOUND");
         }
-        
-        
+               
         $signature = $request->getHeaderLine("HTTP_SIGNATURE");
         $nonce = $request->getHeaderLine("HTTP_NONCE");
         $key = $request->getHeaderLine("PHP_AUTH_PW");
-        
         
         $calculated_signature = base64_encode(hash_hmac("sha256", $key . ":" . $nonce, $secret, True));
         
@@ -114,9 +128,7 @@ abstract class RequestAuthorizer {
                 $logger->error("[Client " . $clientid . "] NOT AUTHORIZED FOR ".$_SERVER['REQUEST_METHOD'] . " OPERATION" );
                 return false;
                 break;
-                
         }
-        
         
         // Check SERVICE SPECIFIC AUTHORIZATION RULES
         if (!self::checkServiceAuthorizations($request)) {
@@ -126,6 +138,11 @@ abstract class RequestAuthorizer {
         return true;
     }
     
+    /**
+     * This method is used to perform any specific service authenticaiton steps as necessary.
+     * 
+     * @param ServerRequestInterface $request
+     */
     abstract function checkServiceAuthorizations(ServerRequestInterface $request);
     
 }
