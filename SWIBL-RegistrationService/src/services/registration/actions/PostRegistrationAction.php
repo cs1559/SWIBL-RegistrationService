@@ -40,6 +40,17 @@ class PostRegistrationAction
             $registration->setId($newid);
 
             // SEND EMAIL CONFIRMATION
+            if ($service->isMailEnabled()) {                          
+                if ($service->isDebugEnabled()) {
+                    $config = $service->getConfig();
+                    $fromEmail= $config->getPropertyValue("debug.email");
+                } else {
+                    $fromEmail = $registration->getEmail();
+                }
+                $logger->info("Sending registration confirmation to " . $fromEmail);
+                $mailer = $service->getMailer();
+                $mailer->send($fromEmail, "SWIBL - Registration Confimration", "test email message");
+            }
             
             $svcresponse = new RegistrationServiceResponse(200, "Record " . $newid . " has been created",$registration);
             $response->write(json_encode($svcresponse));
