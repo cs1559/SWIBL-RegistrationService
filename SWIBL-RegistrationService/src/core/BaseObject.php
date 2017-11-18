@@ -1,7 +1,7 @@
 <?php
 namespace swibl\core;
 
-class BaseObject {
+class BaseObject implements \JsonSerializable {
     
     const VALID = 1;
     const INVALID = 0;
@@ -41,5 +41,14 @@ class BaseObject {
         return $props;
     }
     
+    public function jsonSerialize()
+    {
+        $class_vars = get_class_vars(get_class($this));
+        $jsonArray = array();
+        foreach ($class_vars as $name => $value) {
+            $jsonArray[$name] = $this->$name;
+        }
+        return $jsonArray;
+    }
     
 }
