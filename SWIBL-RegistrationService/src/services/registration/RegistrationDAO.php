@@ -71,7 +71,7 @@ class RegistrationDAO {
     
     function delete($id) {
         
-        $service = RegistrationDAO::getInstance();
+        $service = RegistrationService::getInstance();
         $logger = $service->getLogger();
         
         $logger->debug("Attempting to DELETE record " . $id);
