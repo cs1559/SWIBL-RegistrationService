@@ -11,12 +11,14 @@ class Template  {
     var $folder = null;
     var $nestedtemplates = null;
     var $_container = null;
+    var $tags = null;
     
     function __construct($file = null, $folder = null) {
         $this->objects = array();
         $this->nestedtemplates = array();
         $this->name = $file;
         $this->folder = $folder;
+        $this->tags = array();
     }
     
     
@@ -52,27 +54,19 @@ class Template  {
     }
     function parse() {
         foreach ($this->nestedtemplates as $template) {
-            if (is_null($template->getAlias())) {
-                $this->setObject($template->getName(),$template->getContent());
-            } else {
-                $this->setObject($template->getAlias(),$template->getContent());
+            if ($template instanceof Template) {
+                if (is_null($template->getAlias())) {
+                    $this->setObject($template->getName(),$template->getContent());
+                } else {
+                    $this->setObject($template->getAlias(),$template->getContent());
+                }
             }
         }
         if (count($this->objects) > 0) {
             extract($this->objects);
         }
-        if ($this->getContainer() != null) {
-            $_view = $this->getContainer();
-        }
-//         if (defined(JPATH_COMPONENT)) {
-//             if ($this->folder == null) {
-//                 include(JPATH_COMPONENT  . DS. 'templates'. DS . $this->getName() . '.php');
-//             } else {
-//                 include($this->getFolder() . DS . $this->getName() . '.php');
-//             }
-//         } else {
-//             
-        $fn = $this->getFolder() . $this->getName() . '.php';
+         
+        $fn = $this->getFolder() . $this->getName() . '.htm';
         if (file_exists($fn)) {
             include($fn);
         } else {
@@ -81,13 +75,31 @@ class Template  {
                
     }
     
+    function setTag($name, $value) {
+        $this->tags[$name] = $value;    
+    }
     
+    function renderVar($var) {
+        if (isset($this->objects[$var])) {
+            echo $this->objects[$var];
+        } else {
+            echo "{" . $var . " missing}";
+        }
+    }
     function getContent() {
         ob_start ();
         $this->parse();
         $contenHTML = ob_get_contents ();
         ob_end_clean ();
         return $contenHTML;
+    }
+    function render() {
+        $content = $this->getContent();
+        foreach ($this->tags as $tag => $value) {
+            $searchTag = "/{tag:" . $tag . "}/";
+            $content = preg_replace($searchTag, $value, $content);
+        }
+        return $content;
     }
     
     function addTemplate(Template $tmpl) {
