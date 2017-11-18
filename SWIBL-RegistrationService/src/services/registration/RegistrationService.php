@@ -5,6 +5,7 @@ namespace swibl\services\registration;
 use swibl\core\Application;
 use swibl\core\Config;
 use swibl\core\Database;
+use swibl\core\email\Mailer;
 use swibl\core\logger\FileLogger;
 
 /**
@@ -18,6 +19,7 @@ class RegistrationService extends Application {
     private $config = null;
     private $database = null;
     private $logger = null;
+    private $mailer = null;
 
     private function __construct() {  }
     
@@ -62,6 +64,12 @@ class RegistrationService extends Application {
         $logger->setLevel($this->config->getPropertyValue("log.level"));
         $logger->setEnabled($this->config->getPropertyValue("log.enabled"));
         $this->logger = $logger;
+        
+        // Create mailer
+        $mailer = new Mailer($this->config->getPropertyValue("email.fromEmail"),
+            $this->config->getPropertyValue("email.fromName"));
+        $this->mailer = $mailer;
+        
     }
     
     /**
@@ -123,12 +131,37 @@ class RegistrationService extends Application {
     }
     
     /**
+     * Method to indicate if logging is on for the service.
+     * @return boolean
+     */
+    public function isDebugEnabled() {
+        $config = $this->config;
+        return $config->getPropertyValue("debug.enabled");
+    }
+    
+    /**
+     * Method to indicate if mail is enabled for the service.
+     * @return boolean
+     */
+    public function isMailEnabled() {
+        $config = $this->config;
+        return $config->getPropertyValue("email.enabled");
+    }
+    
+    /**
      * Method to indicate if API authentication is enabled for this service.
      */
     public function isAuthenticationEnabled() {
         $config = $this->config;
         return $config->getPropertyValue("authentication.enabled");
     }
+    
+    
+    public function getMailer()
+    {
+        return $this->mailer;
+    }
+
     
     
 }
